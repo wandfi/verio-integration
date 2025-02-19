@@ -4,27 +4,27 @@ pragma solidity ^0.8.23;
 import "./IVersionable.sol";
 import "./Story/IIPTokenStaking.sol";
 
+/// @notice Configuration structure for the stake pool
+/// @dev Contains all configurable parameters
+struct StakePoolState {
+    uint256 singularity;
+    uint256 minStake;
+    uint256 maxStakeIterations;
+    uint256 maxStake;
+    uint256 delegationSize;
+    uint256 unbondingPeriod;
+    uint256 mintFeeBps;
+    uint256 burnFeeBps;
+    uint256 pendingUnstake;
+    uint256 excessUnstake;
+    bool mintFeeEnabled;
+    bool burnFeeEnabled;
+}
+
 /// @title Stake Pool Interface
 /// @notice Interface for the main staking pool contract that handles IP to vIP conversions
 /// @dev Manages staking, unstaking, and configuration of the staking pool
 interface IStakePool is IVersionable {
-    /// @notice Configuration structure for the stake pool
-    /// @dev Contains all configurable parameters
-    /// @custom:storage-location erc7201:VerioIP.StakePool.StakePoolState
-    struct StakePoolState {
-        uint256 singularity;
-        uint256 minStake;
-        uint256 maxStakeIterations;
-        uint256 maxStake;
-        uint256 delegationSize;
-        uint256 unbondingPeriod;
-        uint256 mintFeeBps;
-        uint256 burnFeeBps;
-        uint256 pendingUnstake;
-        uint256 excessUnstake;
-        bool mintFeeEnabled;
-        bool burnFeeEnabled;
-    }
 
     /// @notice Emitted when a user stakes IP
     /// @param staker Address of the staking user

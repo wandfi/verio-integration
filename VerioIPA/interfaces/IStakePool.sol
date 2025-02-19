@@ -7,75 +7,76 @@ import {ILockup} from "./ILockup.sol";
 import {IRewardPool} from "./IRewardPool.sol";
 import {IComponentSelector} from "./IComponentSelector.sol";
 
+
+/// @notice State for the stake pool
+/// @param ipAsset Address of the IP asset
+/// @param stakeByOperatorUser Mapping of operators to their corresponding user stakes
+/// @param totalStakePerStakeTokenByLockup Mapping of lockup types to their corresponding total stake per stake token
+/// @param stakeTokens Array of stake tokens
+/// @param incentivePoolsByCreators Mapping of creators to their corresponding incentive pools
+/// @param incentivePoolCreators Array of creators
+/// @param selector Address of the component selector
+struct StakePoolState {
+    address ipAsset;
+    // mapping(address => UserStake) stakeByUser;
+    mapping(address => mapping(address => UserStake)) stakeByOperatorUser;
+    mapping(ILockup.Type => mapping(IStakeToken => uint256)) totalStakePerStakeTokenByLockup;
+    mapping(IStakeToken => bool) isStakeTokenStaked;
+    IStakeToken[] stakeTokens;
+    mapping(address => IIncentivePool) incentivePoolsByCreators;
+    mapping(address => bool) incentivePoolRegisteredForCreator;
+    mapping(address => mapping(address => bool)) rewardPoolRegisteredForCreator;
+    address[] incentivePoolCreators;
+    IComponentSelector selector;
+}
+
+/// @notice Configuration for the stake pool
+/// @param ipAsset Address of the IP asset
+struct StakePoolConfig {
+    address ipAsset;
+}
+
+/// @param rewardPerTokenByRewardToken Reward tokens to their corresponding reward per token
+/// @param rewardsClaimed Rewards tokens to the total amount of rewards claimed
+struct RewardInfoForStake {
+    uint256 rewardPerTokenByRewardToken;
+    uint256 rewardsClaimed;
+}
+
+/// @notice State for the user stake
+/// @param rewardPerTokenByRewardToken Mapping of reward tokens to their corresponding reward per token
+/// @param userPeriodBasedStake Mapping of lockup types to their corresponding user period based stake
+struct UserStake {
+    mapping(address => mapping(address => RewardInfoForStake)) rewardsDetail; // ipoolcreator => rewardtoken => RewardDetails
+    mapping(ILockup.Type => UserPeriodBasedStake) userPeriodBasedStake;
+}
+
+/// @notice State for the user period based stake
+/// @param stakeByToken Mapping of stake tokens to their corresponding stake
+/// @param stakeTokens Array of stake tokens
+/// @param lastStakeTimestamp Last stake timestamp
+struct UserPeriodBasedStake {
+    mapping(IStakeToken => uint256) stakeByToken;
+    mapping(IStakeToken => bool) isStakeTokenStaked;
+    IStakeToken[] stakeTokens;
+    uint256 lastStakeTimestamp;
+}
+
+/// @notice State for the user stake amount detail
+/// @param stakeTokenAddress Address of the stake token
+/// @param amount Amount of stake
+/// @param lockup Type of lockup
+/// @param lastStakeTimestamp Last stake timestamp
+struct UserStakeAmountDetail {
+    address stakeTokenAddress;
+    uint256 amount;
+    ILockup.Type lockup;
+    uint256 lastStakeTimestamp;
+}
+
 /// @title IStakePool Interface
 /// @notice Interface for the stake pool contract
 interface IStakePool {
-    /// @notice State for the stake pool
-    /// @param ipAsset Address of the IP asset
-    /// @param stakeByOperatorUser Mapping of operators to their corresponding user stakes
-    /// @param totalStakePerStakeTokenByLockup Mapping of lockup types to their corresponding total stake per stake token
-    /// @param stakeTokens Array of stake tokens
-    /// @param incentivePoolsByCreators Mapping of creators to their corresponding incentive pools
-    /// @param incentivePoolCreators Array of creators
-    /// @param selector Address of the component selector
-    /// @custom:storage-location erc7201:VerioIPA.StakePool.StakePoolState
-    struct StakePoolState {
-        address ipAsset;
-        // mapping(address => UserStake) stakeByUser;
-        mapping(address => mapping(address => UserStake)) stakeByOperatorUser;
-        mapping(ILockup.Type => mapping(IStakeToken => uint256)) totalStakePerStakeTokenByLockup;
-        mapping(IStakeToken => bool) isStakeTokenStaked;
-        IStakeToken[] stakeTokens;
-        mapping(address => IIncentivePool) incentivePoolsByCreators;
-        mapping(address => bool) incentivePoolRegisteredForCreator;
-        mapping(address => mapping(address => bool)) rewardPoolRegisteredForCreator;
-        address[] incentivePoolCreators;
-        IComponentSelector selector;
-    }
-
-    /// @notice Configuration for the stake pool
-    /// @param ipAsset Address of the IP asset
-    struct StakePoolConfig {
-        address ipAsset;
-    }
-
-    /// @param rewardPerTokenByRewardToken Reward tokens to their corresponding reward per token
-    /// @param rewardsClaimed Rewards tokens to the total amount of rewards claimed
-    struct RewardInfoForStake {
-        uint256 rewardPerTokenByRewardToken;
-        uint256 rewardsClaimed;
-    }
-
-    /// @notice State for the user stake
-    /// @param rewardPerTokenByRewardToken Mapping of reward tokens to their corresponding reward per token
-    /// @param userPeriodBasedStake Mapping of lockup types to their corresponding user period based stake
-    struct UserStake {
-        mapping(address => mapping(address => RewardInfoForStake)) rewardsDetail; // ipoolcreator => rewardtoken => RewardDetails
-        mapping(ILockup.Type => UserPeriodBasedStake) userPeriodBasedStake;
-    }
-
-    /// @notice State for the user period based stake
-    /// @param stakeByToken Mapping of stake tokens to their corresponding stake
-    /// @param stakeTokens Array of stake tokens
-    /// @param lastStakeTimestamp Last stake timestamp
-    struct UserPeriodBasedStake {
-        mapping(IStakeToken => uint256) stakeByToken;
-        mapping(IStakeToken => bool) isStakeTokenStaked;
-        IStakeToken[] stakeTokens;
-        uint256 lastStakeTimestamp;
-    }
-
-    /// @notice State for the user stake amount detail
-    /// @param stakeTokenAddress Address of the stake token
-    /// @param amount Amount of stake
-    /// @param lockup Type of lockup
-    /// @param lastStakeTimestamp Last stake timestamp
-    struct UserStakeAmountDetail {
-        address stakeTokenAddress;
-        uint256 amount;
-        ILockup.Type lockup;
-        uint256 lastStakeTimestamp;
-    }
 
     /// @notice Event emitted when a stake pool is created
     /// @param ipAsset Address of the IP asset
@@ -210,7 +211,7 @@ interface IStakePool {
     function getUserStakeAmountForIP(address _user)
         external
         view
-        returns (IStakePool.UserStakeAmountDetail[][] memory);
+        returns (UserStakeAmountDetail[][] memory);
 
     /// @notice Gets the user stake amount for IP for specific lockup
     /// @param _user Address of the user
@@ -219,7 +220,7 @@ interface IStakePool {
     function getUserStakeAmountForIPForLockup(ILockup.Type _lockup, address _user)
         external
         view
-        returns (IStakePool.UserStakeAmountDetail[] memory);
+        returns (UserStakeAmountDetail[] memory);
 
     /// @notice Gets the user last stake block for IP for a lockup
     /// @param _lockup Type of lockup

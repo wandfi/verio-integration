@@ -3,19 +3,18 @@ pragma solidity ^0.8.23;
 
 import "./IVersionable.sol";
 
+/// @notice State for the reward pool
+/// @param feeBps Fee percentage in basis points (100 = 1%)
+/// @param restakedRewards Amount of rewards that have been restaked
+struct RewardPoolState {
+    uint256 feeBps;
+    uint256 restakedRewards;
+}
+
 /// @title Reward Pool Interface
 /// @notice Interface for managing a pool of rewards that can be claimed by stakers
 /// @dev This interface defines the core functionality for reward distribution and configuration
 interface IRewardPool is IVersionable {
-    /// @notice State for the reward pool
-    /// @param feeBps Fee percentage in basis points (100 = 1%)
-    /// @param restakedRewards Amount of rewards that have been restaked
-    /// @custom:storage-location erc7201:VerioIP.RewardPool.RewardPoolState
-    struct RewardPoolState {
-        uint256 feeBps;
-        uint256 restakedRewards;
-    }
-
     /// @notice Emitted when rewards are claimed from the pool
     /// @param recipient Address receiving the rewards
     /// @param amount Amount of rewards claimed

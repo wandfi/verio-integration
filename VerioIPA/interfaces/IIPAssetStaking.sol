@@ -2,7 +2,7 @@
 pragma solidity ^0.8.23;
 
 import {IStakeToken} from "./IStakeToken.sol";
-import {IStakePool} from "./IStakePool.sol";
+import {IStakePool, UserStakeAmountDetail} from "./IStakePool.sol";
 import {ILockup} from "./ILockup.sol";
 import {IIncentivePool} from "./IIncentivePool.sol";
 import {IRewardPool} from "./IRewardPool.sol";
@@ -151,8 +151,8 @@ interface IIPAssetStaking is IVersionable {
     /// @notice Registers an incentive pool
     /// @param _ipAsset Address of the IP asset
     /// @param _incentivePoolConfig Configuration for the incentive pool
-    function registerIncentivePool(address _ipAsset, IIncentivePool.IncentivePoolConfig calldata _incentivePoolConfig)
-        external;
+    // function registerIncentivePool(address _ipAsset, IIncentivePool.IncentivePoolConfig calldata _incentivePoolConfig)
+    //     external;
 
     /// @notice Registers a reward pool
     /// @param _ipAsset Address of the IP asset
@@ -264,7 +264,7 @@ interface IIPAssetStaking is IVersionable {
     function getUserStakeAmountForIP(address _ipAsset, address _user)
         external
         view
-        returns (IStakePool.UserStakeAmountDetail[][] memory);
+        returns (UserStakeAmountDetail[][] memory);
 
     /// @notice Gets the total stake amount for an IP asset for an array of stakeTokens
     /// @param _ipAsset Address of the IP asset
@@ -283,7 +283,7 @@ interface IIPAssetStaking is IVersionable {
     function getUserStakeAmountForIPForLockup(address _ipAsset, ILockup.Type _lockup, address _user)
         external
         view
-        returns (IStakePool.UserStakeAmountDetail[] memory);
+        returns (UserStakeAmountDetail[] memory);
 
     /// @notice Gets the user's last stake block for an IP asset for a lockup type
     /// @param _ipAsset Address of the IP asset

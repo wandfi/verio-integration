@@ -52,7 +52,7 @@ interface IOperatorRegistry is IVersionable {
 
     /// @notice Register an operator
     /// @param _operatorConfig Configuration for the operator
-    function registerOperator(IOperator.OperatorConfig calldata _operatorConfig) external;
+    // function registerOperator(IOperator.OperatorConfig calldata _operatorConfig) external;
 
     /// @notice Deregister an operator
     /// @param _operatorAddress Address of the operator
@@ -76,7 +76,7 @@ interface IOperatorRegistry is IVersionable {
     /// @notice Get the state of an operator
     /// @param _operator Address of the operator
     /// @return State of the operator
-    function getOperatorState(address _operator) external view returns (IOperator.OperatorState memory);
+    // function getOperatorState(address _operator) external view returns (IOperator.OperatorState memory);
 
     /// @notice Get the commission fee for an operator
     /// @param _operator Address of the operator

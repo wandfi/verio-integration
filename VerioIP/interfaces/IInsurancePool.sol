@@ -6,15 +6,15 @@ import "./IVersionable.sol";
 /// @title Insurance Pool Interface
 /// @notice Interface for managing an insurance pool that provides coverage for other components
 /// @dev This interface defines the core functionality for insurance pool operations
+/// @notice State for insurance pool
+/// @param claimant Address of the supported claimant
+/// @param targetInsurancePool Target amount to maintain in the insurance pool
+struct InsurancePoolState {
+    address claimant;
+    uint256 targetInsurancePool;
+}
+
 interface IInsurancePool is IVersionable {
-    /// @notice State for insurance pool
-    /// @param claimant Address of the supported claimant
-    /// @param targetInsurancePool Target amount to maintain in the insurance pool
-    /// @custom:storage-location erc7201:VerioIP.InsurancePool.InsurancePoolState
-    struct InsurancePoolState {
-        address claimant;
-        uint256 targetInsurancePool;
-    }
 
     /// @notice Emitted when insurance is claimed from the pool
     /// @param recipient Address receiving the insurance claim
